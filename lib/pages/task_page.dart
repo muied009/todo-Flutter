@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todo/pages/home_page.dart';
-
 import '../model/task_model.dart';
 import '../providers/task_provider.dart';
 import '../utils/extensions.dart';
 
 class TaskPage extends StatefulWidget {
-  const TaskPage({super.key});
+  final TaskModel? taskModel;
+
+  const TaskPage({Key? key, this.taskModel}) : super(key: key);
 
   @override
   State<TaskPage> createState() => _TaskPageState();
@@ -16,31 +16,29 @@ class TaskPage extends StatefulWidget {
 class _TaskPageState extends State<TaskPage> {
   final titleController = TextEditingController();
   final descriptionController = TextEditingController();
-  String title = "",
-      description = "";
-  late TaskModel taskModel;
 
   @override
-  void didChangeDependencies() {
-    final arguments = ModalRoute.of(context)!.settings.arguments;
-    if (arguments != null && arguments is TaskModel) {
-      taskModel = arguments;
-      titleController.text = taskModel.title;
-      descriptionController.text = taskModel.description;
-    }
-    super.didChangeDependencies();
-  }
+  void initState() {
+    super.initState();
 
+    // Set initial values if taskModel is provided
+    if (widget.taskModel != null) {
+      titleController.text = widget.taskModel!.title;
+      descriptionController.text = widget.taskModel!.description;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Create Task"),
+        title: const Text("Task"),
         elevation: 1,
         actions: [
-          TextButton(onPressed: () => _createTheTask(),
-              child: const Icon(Icons.save))
+          TextButton(
+            onPressed: () => _updateTheTask(),
+            child: const Icon(Icons.save),
+          ),
         ],
       ),
       body: SafeArea(
@@ -78,31 +76,52 @@ class _TaskPageState extends State<TaskPage> {
               ),
             ],
           ),
-        ),),
+        ),
+      ),
     );
   }
+
+  void _updateTheTask() {
+    if (widget.taskModel == null) {
+      // Create a new task if taskModel is not available
+      final newTask = TaskModel(
+        title: titleController.text,
+        description: descriptionController.text,
+      );
+
+      // Perform any additional logic for creating a new task
+      Provider.of<TaskProvider>(context, listen: false)
+          .insertTask(newTask)
+          .then((rowId) {
+        if (rowId > 0) {
+          // Show a message or perform other actions
+          showMsg(context, 'Task Created');
+          Navigator.pop(context); // Navigate back to the previous screen
+        }
+      });
+    } else {
+      // Update an existing task if taskModel is available
+      final updatedTask = TaskModel(
+        id: widget.taskModel!.id,
+        title: titleController.text,
+        description: descriptionController.text,
+      );
+
+      // Perform any additional logic for updating an existing task
+      Provider.of<TaskProvider>(context, listen: false)
+          .updateTask(updatedTask)
+          .then((_) {
+        // Show a message or perform other actions
+        showMsg(context, 'Task Updated');
+        Navigator.pop(context); // Navigate back to the previous screen
+      });
+    }
+  }
+
   @override
   void dispose() {
-    // 1 kind of lifecycle method
     titleController.dispose();
     descriptionController.dispose();
     super.dispose();
-  }
-  _createTheTask() async {
-    final taskModel = TaskModel(
-      title: title,
-      description: description,
-    );
-
-    taskModel.title = titleController.text;
-    taskModel.description = descriptionController.text;
-    Provider.of<TaskProvider>(context, listen: false)
-        .insertTask(taskModel)
-        .then((rowId) {
-      if (rowId > 0) {
-        showMsg(context, 'Saved');
-        Navigator.pop(context);//homepage na asa porjonto pop korte thakbe
-      }
-    });
   }
 }
