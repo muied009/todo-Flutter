@@ -54,7 +54,7 @@ class _TaskPageState extends State<TaskPage> {
                   controller: titleController,
                   decoration: const InputDecoration(
                     labelText: "Title",
-                    prefixIcon: Icon(Icons.call),
+                    prefixIcon: Icon(Icons.title),
                     filled: true,
                   ),
                   validator: (value) {
@@ -71,7 +71,7 @@ class _TaskPageState extends State<TaskPage> {
                   controller: descriptionController,
                   decoration: const InputDecoration(
                     labelText: "Description",
-                    prefixIcon: Icon(Icons.call),
+                    prefixIcon: Icon(Icons.description),
                     filled: true,
                   ),
                 ),

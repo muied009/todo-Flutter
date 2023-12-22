@@ -27,9 +27,15 @@ class TaskProvider extends ChangeNotifier {
 
   Future<TaskModel> getTaskById(int id) => db.getTaskById(id);
 
-  Future<int> deleteTask(int id) {
+  /*Future<int> deleteTask(int id) {
     return db.deleteTask(id);
+  }*/
+  Future<void> deleteTask(int id) async {
+    await db.deleteTask(id);
+    taskList.removeWhere((task) => task.id == id);
+    notifyListeners();
   }
+
 
   Future<void> updateTaskField(TaskModel taskModel, String field) async {
     await db.updateTaskField(taskModel.id, {field: taskModel.status ? 0 : 1});
