@@ -101,7 +101,8 @@ class _TaskPageState extends State<TaskPage> {
         .then((rowId) {
       if (rowId > 0) {
         showMsg(context, 'Saved');
-        Navigator.popUntil(context, (route) => route is HomePage); //homepage na asa porjonto pop korte thakbe
+        Navigator.pop(context);
+        print(Navigator.of(context).toString());//homepage na asa porjonto pop korte thakbe
       }
     });
   }
