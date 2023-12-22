@@ -16,6 +16,7 @@ class TaskPage extends StatefulWidget {
 class _TaskPageState extends State<TaskPage> {
   final titleController = TextEditingController();
   final descriptionController = TextEditingController();
+  final formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -43,6 +44,7 @@ class _TaskPageState extends State<TaskPage> {
       ),
       body: SafeArea(
         child: Form(
+          key: formKey,
           child: ListView(
             padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 8),
             children: [
@@ -84,21 +86,23 @@ class _TaskPageState extends State<TaskPage> {
   void _updateTheTask() {
     if (widget.taskModel == null) {
       // Create a new task if taskModel is not available
-      final newTask = TaskModel(
-        title: titleController.text,
-        description: descriptionController.text,
-      );
+      if (formKey.currentState!.validate()) {
+        final newTask = TaskModel(
+          title: titleController.text,
+          description: descriptionController.text,
+        );
 
-      // Perform any additional logic for creating a new task
-      Provider.of<TaskProvider>(context, listen: false)
-          .insertTask(newTask)
-          .then((rowId) {
-        if (rowId > 0) {
-          // Show a message or perform other actions
-          showMsg(context, 'Task Created');
-          Navigator.pop(context); // Navigate back to the previous screen
-        }
-      });
+        // Perform any additional logic for creating a new task
+        Provider.of<TaskProvider>(context, listen: false)
+            .insertTask(newTask)
+            .then((rowId) {
+          if (rowId > 0) {
+            // Show a message or perform other actions
+            showMsg(context, 'Task Created');
+            Navigator.pop(context); // Navigate back to the previous screen
+          }
+        });
+      }
     } else {
       // Update an existing task if taskModel is available
       final updatedTask = TaskModel(
