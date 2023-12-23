@@ -39,8 +39,8 @@ class _HomePageState extends State<HomePage> {
     return showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Contact'),
-        content: const Text('Are you sure to delete this contact?'),
+        title: const Text('Delete Task'),
+        content: const Text('Are you sure to delete this task?'),
         actions: [
           OutlinedButton(
             onPressed: () {
